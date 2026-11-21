@@ -5,6 +5,7 @@ not in ten different files.
 """
 
 from pathlib import Path
+from typing import Literal, get_args
 
 # ---------- Paths ----------
 # BASE_DIR = the folder this file lives in. Building every path from it means
@@ -29,8 +30,12 @@ SERVER_NAME = "job-hunt"
 
 # ---------- Job tracker ----------
 # A job moves through these statuses, left to right (or to "rejected").
-JOB_STATUSES = ["saved", "applied", "interview", "offer", "rejected"]
-JOB_SOURCES = ["linkedin", "naukri", "indeed", "other"]
+# `Literal` lists the only allowed values. MCP turns it into a list of choices
+# in the tool schema, so Claude can only pick a valid status.
+JobStatus = Literal["saved", "applied", "interview", "offer", "rejected"]
+JobSource = Literal["linkedin", "naukri", "indeed", "other"]
+JOB_STATUSES = list(get_args(JobStatus))
+JOB_SOURCES = list(get_args(JobSource))
 
 # ---------- My job search ----------
 TARGET_ROLES = ["AI Engineer", "AI/ML Engineer", "Data Analyst", "Data Engineer"]

@@ -112,3 +112,44 @@ The answer came back as:
 {"content": [{"type": "text", "text": "Hello, Ann! The job-hunt MCP server is running."}],
  "isError": false}
 ```
+
+---
+
+## Step 2: Tracker tools (SQLite)
+
+### What we built
+| File | Job (restaurant picture) |
+|---|---|
+| `server.py` | **Waiter**: takes Claude's order, calls the kitchen. Tiny functions + docstrings. |
+| `jobhunt/tracker.py` | **Chef**: checks the rules (valid status? duplicate link?). |
+| `jobhunt/db.py` | **Fridge**: stores and fetches rows in SQLite (`data/jobs.db`). |
+| `jobhunt/sources.py` | Finds links in text, detects LinkedIn / Naukri / Indeed. |
+
+Tools: `add_job`, `update_status`, `list_jobs`, `get_job`, `add_note`.
+
+**Why 3 layers?** The Streamlit dashboard (Step 10) reuses the chef and fridge
+without the waiter. And each layer is easy to test alone.
+
+### Key ideas
+- **SQLite** = a whole database in one file. Built into Python (`import sqlite3`).
+- **`?` placeholders** in SQL: `conn.execute("... WHERE id = ?", (job_id,))`.
+  sqlite3 fills them in safely. Gluing text into SQL yourself allows *SQL injection*.
+- **`Literal` types** = a fixed list of choices:
+  ```python
+  JobStatus = Literal["saved", "applied", "interview", "offer", "rejected"]
+  def update_status(job_id: int, status: JobStatus): ...
+  ```
+  MCP shows Claude `"enum": ["saved", ...]`, so Claude *can't* invent a status like "hired".
+- **Errors Claude can read.** In SDK v2 only a `ToolError`'s message reaches Claude
+  (other errors are hidden for safety). Our code raises `ValueError("No job with id 42...")`
+  and the `friendly_errors` decorator turns it into a `ToolError`. Then Claude can fix
+  its own mistake (e.g. call `list_jobs` to find the right id).
+- **Duplicates**: same link → no second row. Simple rule, saves a messy tracker.
+- **No delete tool**: deleting is human-only (dashboard), so the AI can't lose my data.
+- **Tests with a fake database**: `tests/conftest.py` points `config.DB_PATH` at a temp
+  folder for every test (`monkeypatch`). Tests can never touch my real `jobs.db`.
+
+### Output
+```
+12 passed in 2.30s
+```
