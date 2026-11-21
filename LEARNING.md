@@ -73,3 +73,42 @@ Server name: job-hunt
 Tools: ['hello']
 hello('Ann') -> Hello, Ann! The job-hunt MCP server is running.
 ```
+
+---
+
+## Step 1: Test with the MCP Inspector
+
+### What we did
+Used the **MCP Inspector**, the official test app for MCP servers. It plays the role
+of Claude, so I can click a tool and see the exact request and answer.
+
+**Why?** When something breaks later, the Inspector tells me if the bug is in
+*my server* (Inspector fails too) or in *Claude's setup* (Inspector works).
+
+### How to run it
+Browser UI (opens a web page; pick a tool, type arguments, click **Run**):
+```powershell
+npx -y @modelcontextprotocol/inspector .\venv\Scripts\python.exe server.py
+```
+CLI mode (prints JSON in the terminal):
+```powershell
+npx -y @modelcontextprotocol/inspector --cli .\venv\Scripts\python.exe server.py --method tools/list
+npx -y @modelcontextprotocol/inspector --cli .\venv\Scripts\python.exe server.py --method tools/call --tool-name hello --tool-arg name=Ann
+```
+(`mcp dev server.py` also works, but it needs the `uv` tool installed.)
+
+### Key idea: the schema is made for me
+I only wrote `def hello(name: str) -> str` plus a docstring. The SDK turned that into:
+```json
+{"name": "hello",
+ "description": "Say hello. A tiny tool to check the server works.",
+ "inputSchema": {"properties": {"name": {"type": "string"}}, "required": ["name"]}}
+```
+That JSON is **exactly what Claude reads** to learn the tool. Type hints are
+not just decoration. They become the instructions for the AI.
+
+The answer came back as:
+```json
+{"content": [{"type": "text", "text": "Hello, Ann! The job-hunt MCP server is running."}],
+ "isError": false}
+```
