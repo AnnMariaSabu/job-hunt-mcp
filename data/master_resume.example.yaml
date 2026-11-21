@@ -1,0 +1,46 @@
+# EXAMPLE resume for a FAKE person. Safe to commit.
+# To use your own: copy this file to master_resume.yaml (same folder) and edit it.
+# master_resume.yaml is git-ignored, so your real data never goes to GitHub.
+
+profile:
+  name: Asha Example
+  headline: AI/ML Engineer (Fresher) | Python, SQL, Machine Learning
+  email: asha.example@example.com
+  phone: "+91 90000 00000"
+  location: Kochi, Kerala
+  linkedin: linkedin.com/in/asha-example
+  github: github.com/asha-example
+  summary: >-
+    B.Tech (CSE) graduate who builds practical machine learning and data projects
+    in Python. Comfortable with SQL, data cleaning and dashboards, and learning
+    LLM apps (RAG) hands-on.
+
+education:
+  - degree: B.Tech in Computer Science and Engineering
+    school: Example College of Engineering, Kochi
+    years: 2021 - 2025
+    score: CGPA 8.1 / 10
+
+# Only skills you can honestly talk about in an interview.
+skills:
+  - Python
+  - SQL
+  - Pandas
+  - NumPy
+  - Scikit-learn
+  - Machine Learning
+  - Statistics
+  - Data Analysis
+  - Data Cleaning
+  - Data Visualization
+  - Power BI
+  - Excel
+  - ETL
+  - LLM
+  - RAG
+  - LangChain
+  - Streamlit
+  - Git
+
+certifications:
+  - Example Online Certificate in Machine Learning (2024)

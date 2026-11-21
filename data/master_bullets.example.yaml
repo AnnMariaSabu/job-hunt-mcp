@@ -1,0 +1,57 @@
+# EXAMPLE achievement bullets for a FAKE person. Safe to commit.
+# Write every achievement ONCE here, tagged with the skills it proves.
+# tailor_resume() can only PICK from these bullets. It never writes new ones.
+#
+#   id:       short unique name (used to choose bullets)
+#   section:  experience or projects
+#   heading:  the job or project the bullet belongs to
+#   skills:   must also be listed in master_resume.yaml (the safety check enforces this)
+
+bullets:
+  - id: intern-dashboard
+    section: experience
+    heading: Data Analyst Intern | Example Analytics Pvt Ltd, Kochi | Jun - Aug 2024
+    text: Built a Power BI sales dashboard used by 3 regional managers, replacing a weekly manual Excel report.
+    skills: [Power BI, Excel, Data Visualization, Data Analysis]
+
+  - id: intern-sql
+    section: experience
+    heading: Data Analyst Intern | Example Analytics Pvt Ltd, Kochi | Jun - Aug 2024
+    text: Wrote SQL queries to clean and join 200k+ sales records, cutting report preparation from 2 days to 3 hours.
+    skills: [SQL, Data Cleaning, Data Analysis]
+
+  - id: rag-bot
+    section: projects
+    heading: RAG Study Assistant | Python, LangChain, Streamlit
+    text: Built a RAG chatbot that answers questions from 50+ pages of college notes, using LangChain and an LLM API.
+    skills: [Python, LLM, RAG, LangChain]
+
+  - id: rag-eval
+    section: projects
+    heading: RAG Study Assistant | Python, LangChain, Streamlit
+    text: Added a Streamlit chat interface and tested answers on 30 questions, reaching 80% correct answers.
+    skills: [Streamlit, Python, LLM, RAG]
+
+  - id: churn-model
+    section: projects
+    heading: Customer Churn Prediction | Python, Scikit-learn
+    text: Trained and compared 4 scikit-learn models to predict customer churn; the best model reached 0.86 F1 on held-out data.
+    skills: [Machine Learning, Scikit-learn, Python, Statistics]
+
+  - id: churn-eda
+    section: projects
+    heading: Customer Churn Prediction | Python, Scikit-learn
+    text: Cleaned and explored a 7,000-row dataset with Pandas and NumPy, and explained the 3 strongest churn drivers with charts.
+    skills: [Pandas, NumPy, Data Cleaning, Data Analysis, Data Visualization]
+
+  - id: etl-pipeline
+    section: projects
+    heading: Mini ETL Pipeline | Python, SQL
+    text: Wrote a Python ETL script that loads daily CSV files into a SQLite database, with validation checks for bad rows.
+    skills: [Python, SQL, ETL, Data Cleaning]
+
+  - id: team-git
+    section: projects
+    heading: Final Year Project | Team of 4
+    text: Coordinated a 4-person final-year project team using Git and GitHub pull requests.
+    skills: [Git]

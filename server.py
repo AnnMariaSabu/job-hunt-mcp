@@ -14,7 +14,7 @@ from mcp.server import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
 import config
-from jobhunt import tracker
+from jobhunt import matching, tracker
 
 mcp = MCPServer(
     config.SERVER_NAME,
@@ -98,6 +98,20 @@ def get_job(job_id: int) -> dict:
 def add_note(job_id: int, note: str) -> dict:
     """Add a dated note to a job, e.g. 'Emailed the recruiter'. Resets the follow-up timer."""
     return tracker.add_note(job_id, note)
+
+
+# ---------- Step 3: resume matching ----------
+
+@mcp.tool()
+@friendly_errors
+def match_resume(job_id: int) -> dict:
+    """Compare a saved job's skills with MY resume skills.
+
+    Returns match_percent (0-100), matched_skills, skill_gaps (skills the job asks
+    for that I don't have yet), and my existing bullets that prove the matched skills.
+    Saves match_percent on the job.
+    """
+    return matching.match_resume(job_id)
 
 
 if __name__ == "__main__":

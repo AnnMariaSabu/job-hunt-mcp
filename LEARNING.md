@@ -153,3 +153,45 @@ without the waiter. And each layer is easy to test alone.
 ```
 12 passed in 2.30s
 ```
+
+---
+
+## Step 3: Master resume + bullets + match_resume
+
+### What we built
+- `data/master_resume.example.yaml`: profile, education, skills (a **fake** person).
+- `data/master_bullets.example.yaml`: every achievement, written once, **tagged by skill**.
+- `jobhunt/data_files.py`: loads the YAML files. Uses my real file if it exists,
+  else the example. Also has the **bullet safety check**.
+- `jobhunt/skills.py`: finds skills in job text and compares them with mine.
+- `jobhunt/matching.py` + tool `match_resume(job_id)`.
+- `demo.py`: runs the tools on fake data in a temp folder (`python demo.py`).
+
+### Key ideas
+- **Private vs example data.** My real `master_resume.yaml` is git-ignored.
+  The `.example.yaml` files are fake and safe to commit, and the code falls back to them,
+  so anyone can run the project.
+- **YAML** = data written like a tidy list. `yaml.safe_load` reads *only data*
+  (plain `yaml.load` could run code hidden in a file).
+- **Skill matching without AI.** A catalog of skills + aliases:
+  `"scikit-learn": ["scikit-learn", "sklearn"]`. A regex looks for each alias as a
+  *whole word*: `(?<!\w)java(?!\w)` doesn't match inside "javascript".
+  **Why no AI here?** Code is instant, free, gives the same answer every time,
+  and I can see exactly *why* it said 57%.
+- **Match %** = matched skills ÷ skills the job asks for.
+  Example: job wants {python, sql, docker}, I have {python, sql} → 2/3 = 66.7%, gap = docker.
+- **Skill gaps** = what to learn next. If "docker" keeps showing up, that's a signal.
+- **Safety check** (`check_bullets`): every skill tagged on a bullet must also be on my
+  resume. Otherwise a tailored resume could claim a skill I never said I have.
+- **A bug the tests caught early:** the skill "r" matched "Rs. 5 LPA". Fix: search only
+  aliases like "r programming", never a single letter.
+
+### Output (demo)
+```
+>>> match_resume({"job_id": 1})
+"match_percent": 57.1,
+"matched_skills": ["langchain", "llm", "python", "rag"],
+"skill_gaps": ["docker", "fastapi", "vector databases"],
+"supporting_bullets": [{"id": "rag-bot", ...}]
+```
+`20 passed`
