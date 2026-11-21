@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets
+.env
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# PERSONAL DATA: never commit (see CLAUDE.md)
+data/*.yaml
+!data/*.example.yaml
+data/jobs.db
+output/
