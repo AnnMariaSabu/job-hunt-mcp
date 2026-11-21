@@ -87,6 +87,9 @@ async def main():
         await call(client, "match_resume", {"job_id": ai["job_id"]})
         await call(client, "match_resume", {"job_id": da["job_id"]})
 
+        # Step 4: ranking
+        await call(client, "rank_jobs")
+
         await call(client, "list_jobs")
 
 

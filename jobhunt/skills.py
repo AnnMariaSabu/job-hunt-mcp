@@ -97,6 +97,11 @@ def _pattern(phrase: str) -> re.Pattern:
     return re.compile(r"(?<!\w)" + r"\s+".join(words) + r"s?(?!\w)")
 
 
+def mentions(text: str, phrase: str) -> bool:
+    """True if `phrase` appears in `text` as whole words (any case, any dashes)."""
+    return bool(_pattern(phrase).search(normalize(text)))
+
+
 def extract_skills(text: str, extra_skills: list[str] = ()) -> list[str]:
     """All known skills mentioned in the text (canonical names, sorted).
 

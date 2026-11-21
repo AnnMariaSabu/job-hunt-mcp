@@ -195,3 +195,34 @@ without the waiter. And each layer is easy to test alone.
 "supporting_bullets": [{"id": "rag-bot", ...}]
 ```
 `20 passed`
+
+---
+
+## Step 4: Rubric + rank_jobs
+
+### What we built
+- `data/rubric.example.yaml`: my priorities with **weights**.
+- `jobhunt/ranking.py` + tool `rank_jobs(status="saved")`.
+
+### Key ideas
+- **Two different questions:**
+  `match_resume` = "do *I* fit the job?" and `rank_jobs` = "does the job fit *me*?"
+  In the demo the Data Analyst job is a 100% skill match but ranks lower,
+  because it pays 4 LPA and mentions no learning.
+- **Weighted average.** Each factor scores 0.0–1.0, the weight says how much it counts:
+  ```
+  role_fit 0.79 x 35 + location 1.0 x 20 + salary 1.0 x 15 + learning 1.0 x 20 + company 0.5 x 10
+  = 87.5 out of 100
+  ```
+  Change the weights in `rubric.yaml` and the ranking follows *my* priorities.
+- **Explainable scores.** Every factor returns a reason ("in Kochi", "6 LPA (target 6)").
+  A ranking you can't explain is a ranking you can't trust.
+- **Unknown ≠ bad.** No salary given → 0.5 (neutral), so a job isn't punished for a
+  missing number.
+- **Parsing text with regex:** `"5-7 LPA"` → 6.0 (middle of the range).
+- **Scores don't reset follow-ups.** Saving `rank_score` uses `touch=False`, so
+  `date_updated` only changes on real news (status, notes). A test checks this.
+- **Checking config files.** A typo like `vibes: 10` in the rubric gives a clear error
+  instead of a silent wrong ranking.
+
+`30 passed`

@@ -1,0 +1,30 @@
+# EXAMPLE rubric: what matters to ME in a job, with weights. Safe to commit.
+# To use your own: copy to rubric.yaml (git-ignored) and change the numbers.
+#
+# Each factor scores a job from 0.0 (bad) to 1.0 (great).
+# Final score = weighted average x 100.  Bigger weight = matters more to me.
+
+weights:
+  role_fit: 35    # job title is one of my target roles + my skills match
+  location: 20    # Kochi / Bangalore / Chennai (see config.py), or remote
+  salary: 15      # compared with my target below
+  learning: 20    # mentorship, training, real AI work
+  company: 10     # dream companies up, avoid-list down
+
+# Job titles that also count as a full role match (on top of config.TARGET_ROLES).
+extra_role_titles: [ML Engineer, Machine Learning Engineer, GenAI Engineer, LLM Engineer,
+                    Data Scientist, Business Analyst]
+# Words that make a title a half match, e.g. "Data Associate".
+related_role_words: [ai, ml, machine learning, data, analyst, analytics, llm, python]
+
+salary:
+  minimum_lpa: 3   # at or below this = 0.0
+  target_lpa: 6    # at or above this = 1.0
+
+remote_ok: true    # a remote job counts (almost) like a job in my city
+
+learning_keywords: [mentorship, mentor, training, learning, upskill, certification,
+                    research, llm, genai, generative ai, rag, fresher, graduate program]
+
+dream_companies: []   # e.g. [Example AI Labs]
+avoid_companies: []   # e.g. [Some Company With Bad Reviews]

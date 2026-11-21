@@ -14,7 +14,7 @@ from mcp.server import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
 import config
-from jobhunt import matching, tracker
+from jobhunt import matching, ranking, tracker
 
 mcp = MCPServer(
     config.SERVER_NAME,
@@ -112,6 +112,18 @@ def match_resume(job_id: int) -> dict:
     Saves match_percent on the job.
     """
     return matching.match_resume(job_id)
+
+
+# ---------- Step 4: ranking ----------
+
+@mcp.tool()
+@friendly_errors
+def rank_jobs(status: config.JobStatus = "saved") -> list[dict]:
+    """Rank jobs by MY priorities (rubric.yaml): role fit, location, salary,
+    learning, company. Best first, score 0-100, with the reason for each factor.
+    Saves rank_score on each job. Default: only jobs I haven't applied to yet.
+    """
+    return ranking.rank_jobs(status)
 
 
 if __name__ == "__main__":
