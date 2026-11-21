@@ -5,7 +5,8 @@ Beginner learning to become an AI engineer. Explain in simple words with a small
 example. Explain WHY, not just WHAT. Keep answers short.
 
 ## Rules
-- ONE step at a time. Make a plan and wait for my OK before writing code.
+- Work through the PLAN.md steps back to back. Don't wait for my OK between steps.
+  Only stop if something fails or you need a decision from me.
 - Use the official MCP Python SDK v2 docs, not old v1 tutorials.
 - After writing code, run it and show me the output.
 - Never commit my personal data (real resume, jobs.db, output/).
