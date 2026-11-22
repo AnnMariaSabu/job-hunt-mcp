@@ -12,7 +12,8 @@ jobs:
       features and RAG pipelines in Python using LangChain, store embeddings in a
       vector database such as FAISS, and expose them through FastAPI. Experience
       with Docker is a plus.
-    expected_skills: [llm, rag, python, langchain, vector databases, fastapi, docker]
+    expected_skills: [llm, rag, python, langchain, vector databases, embeddings, fastapi,
+                      docker]
 
   - id: data-analyst-bangalore
     role: Data Analyst

@@ -27,8 +27,28 @@ def test_tailor_resume_writes_docx_with_matched_skills_first():
     text = docx_text(path)
     assert "Asha Example" in text
     assert result["skills_order"][:4] == ["Python", "LLM", "RAG", "LangChain"]
-    assert result["bullets_used"][0] == "rag-bot"
-    assert len(result["bullets_used"]) == config.MAX_BULLETS
+    # Experience first (always kept), then the best-matching project bullet.
+    assert result["bullets_used"][:3] == ["intern-dashboard", "intern-sql", "rag-bot"]
+
+
+def test_experience_is_always_kept_even_when_space_is_short(monkeypatch):
+    monkeypatch.setattr(config, "MAX_BULLETS", 3)
+    result = resume.tailor_resume(make_job())
+    assert result["bullets_used"] == ["intern-dashboard", "intern-sql", "rag-bot"]
+
+
+def test_section_order_and_project_links(isolated):
+    (isolated / "master_resume.yaml").write_text(
+        Path(config.DATA_DIR / "master_resume.example.yaml").read_text(encoding="utf-8")
+        + "\nsection_order: [projects, experience]\n", encoding="utf-8")
+    bullets = data_files.load_yaml(config.MASTER_BULLETS_PATH)
+    bullets["bullets"][2]["link"] = "github.com/asha-example/rag-bot"
+    import yaml
+    (isolated / "master_bullets.yaml").write_text(yaml.safe_dump(bullets), encoding="utf-8")
+
+    text = docx_text(resume.tailor_resume(make_job())["file"])
+    assert text.index("Projects") < text.index("Experience")
+    assert "github.com/asha-example/rag-bot" in text
 
 
 def test_skill_gaps_are_never_added():

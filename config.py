@@ -53,5 +53,6 @@ LOCATION_ALIASES = {
 FOLLOWUP_AFTER_DAYS = 7
 
 # ---------- Resume ----------
-# How many bullets go on a tailored resume (one page for a fresher).
-MAX_BULLETS = 6
+# How many bullets go on a tailored resume (about one page for a fresher).
+# Experience bullets are always kept; projects fill the rest, best match first.
+MAX_BULLETS = 10

@@ -22,6 +22,14 @@ def test_extract_respects_word_boundaries():
     assert "r" not in skills.extract_skills("Salary Rs. 5 LPA, R&D team")
 
 
+def test_ai_engineer_words_are_recognised():
+    text = "Agentic AI with function calling, evals, MCP, embeddings. C/C++ helpful."
+    assert skills.extract_skills(text) == [
+        "ai agents", "c", "c++", "embeddings", "llm evaluation", "mcp", "tool calling"]
+    assert skills.canonical("Model Context Protocol (MCP)") == "mcp"
+    assert "c" not in skills.extract_skills("CS degree, grade C")  # never the bare letter
+
+
 def test_match_percent_and_gaps():
     result = skills.match_skills("Python, SQL and Docker needed", ["Python", "SQL", "Excel"])
     assert result["matched_skills"] == ["python", "sql"]

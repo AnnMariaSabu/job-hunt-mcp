@@ -15,6 +15,7 @@ SKILL_CATALOG: dict[str, list[str]] = {
     "python": ["python"],
     "sql": ["sql", "mysql", "postgresql", "postgres", "sqlite", "t-sql", "pl/sql"],
     "r": ["r programming", "r language", "rstudio"],
+    "c": ["c programming", "c language", "c/c++"],  # never the bare letter "c"
     "java": ["java"],
     "javascript": ["javascript", "typescript", "node.js", "nodejs"],
     "c++": ["c++"],
@@ -46,6 +47,11 @@ SKILL_CATALOG: dict[str, list[str]] = {
     "vector databases": ["vector database", "vector db", "vector store", "faiss",
                          "pinecone", "chromadb", "weaviate", "qdrant"],
     "hugging face": ["hugging face", "huggingface", "transformers"],
+    "embeddings": ["embedding", "vector embedding", "sentence embedding"],
+    "ai agents": ["ai agent", "agentic", "llm agent", "autonomous agent", "multi agent"],
+    "tool calling": ["tool calling", "function calling", "tool use"],
+    "mcp": ["mcp", "model context protocol", "model context protocol (mcp)"],
+    "llm evaluation": ["llm evaluation", "evals", "rag evaluation", "ai evaluation"],
     "mlops": ["mlops", "mlflow", "model deployment"],
     # Engineering / data engineering
     "fastapi": ["fastapi"],

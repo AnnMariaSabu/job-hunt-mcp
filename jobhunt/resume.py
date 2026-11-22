@@ -42,10 +42,15 @@ def choose_bullets(all_bullets: list[dict], wanted_skills: list[str],
                              f"Max is {config.MAX_BULLETS} (config.MAX_BULLETS).")
         return [by_id[i] for i in chosen_ids]
 
-    # Best matches first. Short of matches? Fill up with the rest (file order).
-    best_ids = [b["id"] for b in matching.rank_bullets(all_bullets, wanted_skills)]
-    rest_ids = [b["id"] for b in all_bullets if b["id"] not in best_ids]
-    return [by_id[i] for i in (best_ids + rest_ids)[:config.MAX_BULLETS]]
+    # Experience is ALWAYS kept: real work matters to recruiters even when it
+    # doesn't match this job's skills (dropping it would hide my internships).
+    must = [b["id"] for b in all_bullets if b.get("section") == "experience"]
+    # Projects fill the rest: best matches first, then the others (file order).
+    best = [b["id"] for b in matching.rank_bullets(all_bullets, wanted_skills)
+            if b["id"] not in must]
+    rest = [b["id"] for b in all_bullets if b["id"] not in must and b["id"] not in best]
+    room = max(config.MAX_BULLETS - len(must), 0)
+    return [by_id[i] for i in must + (best + rest)[:room]]
 
 
 def order_skills(resume_skills: list[str], matched: list[str]) -> list[str]:
@@ -111,22 +116,26 @@ def write_docx(path: Path, resume: dict, chosen_skills: list[str],
     doc.add_heading("Skills", level=1)
     doc.add_paragraph(", ".join(chosen_skills))
 
-    for section_name, title in (("experience", "Experience"), ("projects", "Projects")):
+    # Section order comes from my resume file, e.g. [projects, experience].
+    for section_name in resume.get("section_order", ["experience", "projects"]):
         bullets = [b for b in chosen_bullets if b.get("section") == section_name]
         if not bullets:
             continue
-        doc.add_heading(title, level=1)
+        doc.add_heading(section_name.title(), level=1)
         for heading in dict.fromkeys(b.get("heading", "") for b in bullets):
+            group = [b for b in bullets if b.get("heading", "") == heading]
             doc.add_paragraph().add_run(heading).bold = True
-            for bullet in bullets:
-                if bullet.get("heading", "") == heading:
-                    doc.add_paragraph(bullet["text"], style="List Bullet")
+            link = next((b["link"] for b in group if b.get("link")), None)
+            if link:
+                doc.add_paragraph(link)
+            for bullet in group:
+                doc.add_paragraph(bullet["text"], style="List Bullet")
 
     if resume.get("education"):
         doc.add_heading("Education", level=1)
         for edu in resume["education"]:
-            line = ", ".join(str(edu[k]) for k in ("degree", "school", "years", "score")
-                             if edu.get(k))
+            line = " | ".join(str(edu[k]) for k in ("degree", "school", "years", "score")
+                              if edu.get(k))
             doc.add_paragraph(line)
 
     if resume.get("certifications"):

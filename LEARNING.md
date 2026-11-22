@@ -432,6 +432,39 @@ Overall  precision 1.00 | recall 0.89 | F1 0.94
 
 ---
 
+## After Step 11: using MY real resume
+
+### What we did
+- Turned my PDF resume into `data/master_resume.yaml` + `data/master_bullets.yaml`
+  (git-ignored; bullets copied **word for word**, 12 bullets, 39 skills).
+- Added "Machine Learning" only after I confirmed it. Pandas / Excel / Power BI were
+  NOT added: I haven't said I know them, so Data Analyst jobs will honestly show gaps.
+
+### Real data found problems the fake data hid
+1. **Same skill, different words.** A job saying "agentic AI", "function calling", "evals"
+   or "MCP" didn't match my AI Agents / Tool Calling / LLM Evaluation / MCP.
+   Fix: new skills + aliases in `SKILL_CATALOG`.
+   **Before 75% (missing 4 of my real strengths) → after 83.3%**, gaps only Docker, FastAPI.
+2. **The bare letter "C"** would match "CS degree". Fix: only "C/C++", "C programming"...
+3. **Internships disappeared** from tailored resumes (they rarely match AI skills).
+   Fix: experience bullets are *always* kept; projects fill the rest. `MAX_BULLETS` = 10.
+4. **GitHub links and section order**: bullets can have a `link`, and
+   `section_order: [projects, experience]` in my resume file sets the order.
+
+### Key ideas
+- **Test with real data.** Fake data is made to fit the code; real data shows the gaps.
+- **Measure before and after a change**, so I *know* it helped (75% → 83.3%, and the
+  matched skills are now the right ones).
+- **The evaluation as a safety net.** After adding "embeddings", precision dropped
+  (1.00 → 0.97). The eval doesn't say who is wrong: I decided the *label* was
+  incomplete (the job really asks for embeddings), fixed it → back to 1.00.
+- **A wrong test is also a bug.** One new test expected "llm" in a text that never said
+  LLM; the code was right, the test was fixed.
+
+`68 passed` · eval `precision 1.00 | recall 0.89 | F1 0.94`
+
+---
+
 ## 🧭 The big picture (read this first when revising)
 
 **In one sentence:** Claude is the *brain and the writer*; my server is the *hands and the
