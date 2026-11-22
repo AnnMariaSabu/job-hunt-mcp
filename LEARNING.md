@@ -380,3 +380,43 @@ When Claude Code opens this folder, it reads this file and starts our server ove
 - **Tests with fake emails** for each site's format (`tests/test_sources.py`).
 
 `58 passed`
+
+---
+
+## Step 10: Streamlit dashboard + tests + evaluation
+
+### What we built
+- `dashboard.py`: my control panel (`.\venv\Scripts\streamlit run dashboard.py`).
+  Counts per status, job table, one-job view (match, status, notes, resume download),
+  add job / import alert email, follow-ups, skill gaps, and **delete (human only)**.
+- `tests/test_dashboard.py`: the page tested *without a browser* (Streamlit `AppTest`).
+- `evaluate.py` + `evaluation/cases.yaml`: measures *quality*.
+- `tests/test_eval.py`: fails if quality drops.
+
+### Key ideas
+- **Reuse pays off.** The dashboard imports the same `jobhunt/` code as `server.py`.
+  No logic is copied, so the AI and I always see the same rules and data.
+- **Streamlit = Python script → web page.** The script re-runs top to bottom on every click.
+  `st.rerun()` redraws after a change. `st.session_state` remembers a message between runs.
+- **Human-only delete** needs a tick on "Yes, delete forever" first (the button is disabled
+  until then). A test checks this.
+- **Widget keys** (`key="save_job"`) let tests find a button by name, not by position.
+- **Tests vs evaluation:**
+  - a *test* asks "does it work?" (yes/no)
+  - an *evaluation* asks "how good is it?" (a score). This is a core AI-engineer habit.
+- **Precision / recall / F1** (skill finder vs skills I labelled by hand):
+  - precision = of what we found, how much was right? → **1.00** (no false alarms)
+  - recall = of what was there, how much did we find? → **0.89** (some misses)
+  - F1 = both in one number → **0.94**
+- **The eval shows what to fix next:** "clean data", "visualise" (UK spelling),
+  "Big Query" (with a space), "XGBoost", "predictive models". 👉 *Exercise:* add these
+  aliases to `SKILL_CATALOG` in `jobhunt/skills.py`, rerun `evaluate.py`, and watch recall go up.
+- **Quality guard:** `test_eval.py` fails if precision < 0.95 or F1 < 0.90. Adding a sloppy
+  alias like `"ai"` → false alarms → the test catches it.
+
+### Output
+```
+Overall  precision 1.00 | recall 0.89 | F1 0.94
+5/5 pairs ranked correctly
+65 passed
+```

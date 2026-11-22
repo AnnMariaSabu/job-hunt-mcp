@@ -1,0 +1,88 @@
+# Evaluation cases: FAKE job posts, with skills labelled BY HAND (the "ground truth").
+# evaluate.py compares what our code finds with these labels.
+# Some cases are hard ON PURPOSE (other spellings), to show where the code is weak.
+
+jobs:
+  - id: ai-engineer-kochi
+    role: AI Engineer
+    location: Kochi
+    salary_lpa: 6
+    description: >-
+      We are hiring an AI Engineer (0-2 years) in Kochi. You will build LLM-powered
+      features and RAG pipelines in Python using LangChain, store embeddings in a
+      vector database such as FAISS, and expose them through FastAPI. Experience
+      with Docker is a plus.
+    expected_skills: [llm, rag, python, langchain, vector databases, fastapi, docker]
+
+  - id: data-analyst-bangalore
+    role: Data Analyst
+    location: Bengaluru
+    salary_lpa: 4.5
+    description: >-
+      Data Analyst, Bengaluru. Write SQL queries (PostgreSQL), build Power BI and
+      Tableau dashboards, and clean data in Excel. Basic statistics knowledge required.
+    expected_skills: [sql, power bi, tableau, data visualization, data cleaning, excel,
+                      statistics]
+
+  - id: data-engineer-chennai
+    role: Data Engineer
+    location: Chennai
+    salary_lpa: 5
+    description: >-
+      Data Engineer, Chennai. Design ETL pipelines with PySpark and Airflow, load data
+      into Snowflake, and work on AWS. Strong SQL and Python.
+    expected_skills: [etl, spark, airflow, data warehousing, aws, sql, python]
+
+  - id: ml-engineer-bangalore
+    role: Machine Learning Engineer
+    location: Bangalore
+    salary_lpa: 8
+    description: >-
+      Machine Learning Engineer. Train deep learning models with PyTorch and TensorFlow,
+      track experiments in MLflow, deploy on Kubernetes. Knowledge of NLP or computer
+      vision preferred.
+    expected_skills: [machine learning, deep learning, pytorch, tensorflow, mlops,
+                      kubernetes, nlp, computer vision]
+
+  - id: genai-intern-remote
+    role: GenAI Intern
+    location: Remote
+    description: >-
+      GenAI Intern. Prompt engineering, Hugging Face Transformers, and building chatbots
+      with Gen-AI APIs. Python required; Streamlit demos welcome.
+    expected_skills: [llm, prompt engineering, hugging face, python, streamlit]
+
+  - id: business-analyst-mumbai
+    role: Business Analyst
+    location: Mumbai
+    description: >-
+      Business Analyst. Analyze data to find insights, prepare reports in MS Excel and
+      Google Sheets, and present to stakeholders. SQL is a plus.
+    expected_skills: [data analysis, excel, sql]
+
+  - id: customer-support-kochi
+    role: Customer Support Executive
+    location: Kochi
+    salary_lpa: 3
+    description: >-
+      Customer Support Executive (Kochi). Excellent communication skills, handle R&D
+      team requests, salary Rs. 3 LPA. Must be comfortable with email and phone support.
+    expected_skills: []   # traps: "Excellent" is not Excel, "R&D" / "Rs." are not R
+
+  - id: data-scientist-pune
+    role: Data Scientist
+    location: Pune
+    description: >-
+      Data Scientist. Build predictive models using scikit learn and XGBoost, do EDA with
+      pandas and NumPy, and visualise results. Big Query experience preferred.
+    expected_skills: [machine learning, scikit-learn, xgboost, pandas, numpy,
+                      data visualization, data warehousing]
+
+# Pairs where the FIRST job should clearly rank ABOVE the second for me
+# (using the example rubric and example resume).
+ranking_pairs:
+  - [ai-engineer-kochi, customer-support-kochi]
+  - [data-analyst-bangalore, customer-support-kochi]
+  - [ml-engineer-bangalore, customer-support-kochi]
+  - [ai-engineer-kochi, data-scientist-pune]
+  - [data-engineer-chennai, data-scientist-pune]
