@@ -57,6 +57,21 @@ def test_prompts_are_listed_and_filled_in():
     assert "tailor_resume(7)" in prep.messages[0].content.text
 
 
+def test_find_jobs_prompt_uses_my_roles_and_cities_by_default():
+    async def work(client):
+        names = [p.name for p in (await client.list_prompts()).prompts]
+        default = await client.get_prompt("find_jobs")
+        custom = await client.get_prompt("find_jobs", {"roles": "LLM Engineer",
+                                                       "cities": "Remote"})
+        return names, default.messages[0].content.text, custom.messages[0].content.text
+
+    names, default, custom = with_client(work)
+    assert "find_jobs" in names
+    assert "AI Engineer" in default and "Kochi, Bangalore, Chennai" in default
+    assert "LLM Engineer" in custom and "Remote" in custom
+    assert "NEVER apply" in default and 'source="indeed"' in default
+
+
 def test_skill_gap_report_counts_gaps_across_jobs():
     for n in range(3):
         tracker.add_job(f"https://example.com/{n}", role="AI Engineer",

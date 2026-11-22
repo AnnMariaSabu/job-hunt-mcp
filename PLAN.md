@@ -10,7 +10,9 @@ built from scratch in Python for learning. It NEVER applies by itself.
 - Roles: AI Engineer, AI/ML Engineer, Data Analyst, Data Engineer
 - Level: Fresher / 0-2 years (B.Tech graduate)
 - Locations: Kochi, Bangalore, Chennai
-- Sources: LinkedIn, Naukri, Indeed (job-alert emails + paste link), Indeed connector
+- Sources: Indeed connector (Claude searches, `find_jobs` prompt) + paste LinkedIn /
+  Naukri jobs (link + job text, or a copied job-alert email). No Gmail connection:
+  it felt like too much setup.
 
 ## Tech
 - Windows + PowerShell, Python 3.12, venv
@@ -46,3 +48,4 @@ Resources: master resume, bullets, job list. Prompts: "weekly job review".
 5 tailor_resume | 6 cover letter + followups | 7 resources + prompts
 8 connect to Claude Code | 9 job sources (paste link, alert emails)
 10 Streamlit dashboard + tests + evaluation | 11 README + notes
+12 find jobs: `find_jobs` prompt (Indeed connector) + "how to paste a job" guide

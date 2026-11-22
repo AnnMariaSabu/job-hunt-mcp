@@ -235,6 +235,13 @@ def prepare_application(job_id: str) -> str:
     return prompts.prepare_application(job_id)
 
 
+@mcp.prompt(title="Find jobs on Indeed")
+def find_jobs(roles: str = "", cities: str = "") -> str:
+    """Search Indeed (with the Indeed connector) for my roles and cities, save the
+    good jobs with full descriptions, and rank them. Leave empty to use config.py."""
+    return prompts.find_jobs(roles, cities)
+
+
 # ---------- Step 9: job sources ----------
 
 @mcp.tool()

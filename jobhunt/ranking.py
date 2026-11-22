@@ -140,9 +140,12 @@ def rank_jobs(status: str = "saved") -> list[dict]:
     ranked = []
     for job in db.list_jobs([status]):
         result = score_job(job, rubric, my_skills)
-        db.update_job(job["id"], {"rank_score": result["score"]}, touch=False)
+        percent = skills.match_skills(matching.job_text(job), my_skills)["match_percent"]
+        db.update_job(job["id"], {"rank_score": result["score"], "match_percent": percent},
+                      touch=False)
         ranked.append({"job_id": job["id"], "company": job["company"],
-                       "role": job["role"], "location": job["location"], **result})
+                       "role": job["role"], "location": job["location"],
+                       "match_percent": percent, **result})
     ranked.sort(key=lambda r: r["score"], reverse=True)
     for position, item in enumerate(ranked, start=1):
         item["rank"] = position

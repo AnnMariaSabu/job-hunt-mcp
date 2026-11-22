@@ -22,6 +22,8 @@ def test_good_job_ranks_above_bad_job_and_scores_are_saved():
     assert ranked[0]["rank"] == 1
     assert 0 <= ranked[1]["score"] < ranked[0]["score"] <= 100
     assert db.get_job(good)["rank_score"] == ranked[0]["score"]
+    # rank_jobs also saves the skill match %, so tables can show it
+    assert ranked[0]["match_percent"] == db.get_job(good)["match_percent"] == 100.0
 
 
 def test_breakdown_explains_each_factor():

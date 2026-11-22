@@ -46,7 +46,18 @@ Engineer roles in Kochi, Bangalore and Chennai. All of that is easy to change in
 | `hello(name)` | Health check. |
 
 **Resources:** `resume://master`, `resume://bullets`, `jobs://list`, `jobs://{job_id}`<br>
-**Prompts:** `weekly_job_review`, `prepare_application(job_id)`
+**Prompts:** `find_jobs(roles?, cities?)`, `weekly_job_review`, `prepare_application(job_id)`
+
+## How jobs get in
+
+| Site | How | Example |
+|---|---|---|
+| **Indeed** | Claude searches with the **Indeed connector** (connect it in claude.ai → Settings → Connectors) | `/mcp__job-hunt__find_jobs`, or *"Find AI Engineer jobs in Kochi on Indeed and save the good ones"* |
+| **LinkedIn / Naukri** | **Paste** the link **and** the job text (the text is what makes matching work) | Claude: *"Save this job: https://... (paste the description)"*. Dashboard: **Add jobs** → paste both into the big box. |
+| **Any alert email** | Copy the whole email and paste it | Dashboard: **Add jobs → Import a job-alert email** |
+
+The server never opens LinkedIn or Naukri pages itself (no scraping). It reads only what
+you paste or what the Indeed connector returns.
 
 ## Safety rules (enforced in code)
 
@@ -87,6 +98,7 @@ that are listed in your `master_resume.yaml`; the safety check enforces this.
 | **Evaluation** | `.\venv\Scripts\python.exe evaluate.py` |
 
 Things to say to Claude:
+- *"Find jobs on Indeed"* (or run `/mcp__job-hunt__find_jobs`)
 - *"Save this job: <paste the job post>"*
 - *"Import this job alert email: <paste>"*
 - *"Rank my saved jobs and tell me the top 3"*
@@ -95,7 +107,7 @@ Things to say to Claude:
 
 ## Quality
 
-- **65 tests**: they use a temporary database and the fake example data, so they never touch your files.
+- **69 tests**: they use a temporary database and the fake example data, so they never touch your files.
 - **Evaluation** (`evaluate.py`): the skill finder, checked against 8 hand-labelled job posts,
   scores **precision 1.00, recall 0.89, F1 0.94**, and the ranking gets **5/5** obvious pairs right.
 
