@@ -501,6 +501,41 @@ AI/data jobs → save with the **full description** → rank → show the top 5.
 
 ---
 
+## After Step 12: first real Indeed search + the duplicate bug
+
+### What happened
+The first real search saved 14 jobs. But it showed a bug: **Indeed gives the same job
+a NEW short link every time.** One Circular Carbon job came back as `aa9bng2wdvlq`,
+`aaxfncp68hfh` and `aaj9mc6lyrj6`. My tracker only spotted duplicates by *exact link*,
+so next week's search would have saved every job again.
+
+### The fix
+A job now also counts as a duplicate if it has the **same company + same role**.
+`same_job_key()` in `tracker.py` cleans both first: lowercase, letters and numbers only.
+```
+"ROTOX TECHNOLOGIES PVT LTD" + "AI Engineer – CV"  ->  "rotox technologies pvt ltd|ai engineer cv"
+"Rotox Technologies Pvt. Ltd." + "ai engineer cv" ->  "rotox technologies pvt ltd|ai engineer cv"   same key = duplicate
+```
+If the company or role is unknown (alert emails often have neither), we skip this check,
+because then every "Unknown company / Unknown role" job would look the same.
+
+### Key ideas
+- **Test with real data.** All 69 tests passed, but they used links that never change.
+  Real Indeed data broke that hidden assumption in the very first run.
+- **TDD for bugs (red → green):** first write a test that shows the bug and *watch it fail*
+  (`'added' == 'duplicate'` failed). Then write the fix and watch it pass. A test you
+  never saw fail might not test anything.
+- **Guard tests:** I also added tests that pass already (different role = new job;
+  unknown jobs are not merged). They stop the fix from going too far.
+- **Trade-off:** if one company posts the *same role in two cities*, the 2nd one is now
+  seen as a duplicate. That's rare, and the message tells me which job it matched.
+- **Restart needed:** Claude Code started my server when the session began, so the
+  running server still has the old code. A new session loads the fix.
+
+`72 passed`
+
+---
+
 ## 🧭 The big picture (read this first when revising)
 
 **In one sentence:** Claude is the *brain and the writer*; my server is the *hands and the

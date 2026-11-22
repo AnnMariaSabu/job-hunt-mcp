@@ -4,6 +4,8 @@ Mistakes by the caller raise ValueError with a clear message.
 server.py turns that message into something Claude can read and fix.
 """
 
+import re
+
 import config
 from jobhunt import db, sources
 
@@ -24,10 +26,33 @@ def require_job(job_id: int) -> dict:
     return job
 
 
+def same_job_key(company: str, role: str) -> str:
+    """'Rotox Pvt. Ltd.' + 'AI Engineer – CV' -> 'rotox pvt ltd|ai engineer cv'.
+    Case, dots and dashes are ignored, so one job always gets the same key.
+    Empty if company or role is unknown: then we can't tell two jobs apart."""
+    def clean(text: str) -> str:
+        return " ".join(re.findall(r"[a-z0-9]+", (text or "").lower()))
+    company, role = clean(company), clean(role)
+    return f"{company}|{role}" if company and role else ""
+
+
+def find_same_job(company: str, role: str) -> dict | None:
+    """A saved job with the same company and role, even if its link is different.
+    Needed because Indeed gives the same job a new short link on every search."""
+    key = same_job_key(company, role)
+    if not key:
+        return None
+    for job in db.list_jobs():
+        if same_job_key(job["company"], job["role"]) == key:
+            return job
+    return None
+
+
 def add_job(link_or_text: str, source: str = "", company: str = "", role: str = "",
             location: str = "", description: str = "",
             salary_lpa: float | None = None) -> dict:
-    """Save a job from a link OR from pasted job text. Skips duplicate links."""
+    """Save a job from a link OR from pasted job text.
+    Skips duplicates: the same link, or the same company + role."""
     text = (link_or_text or "").strip()
     if not text:
         raise ValueError("Give a job link or paste the job description text.")
@@ -45,7 +70,7 @@ def add_job(link_or_text: str, source: str = "", company: str = "", role: str = 
     if source not in config.JOB_SOURCES:
         raise ValueError(f"Unknown source '{source}'. Use one of: {config.JOB_SOURCES}")
 
-    existing = db.find_by_link(link)
+    existing = db.find_by_link(link) or find_same_job(company, role)
     if existing:
         return {"result": "duplicate", "job_id": existing["id"],
                 "message": f"Already saved as job {existing['id']}. Nothing added. "

@@ -28,6 +28,32 @@ def test_duplicate_link_is_not_added_twice():
     assert len(tracker.list_jobs()) == 1
 
 
+def test_same_company_and_role_with_a_new_link_is_a_duplicate():
+    # Indeed gives the SAME job a NEW short link on every search.
+    first = tracker.add_job("https://to.indeed.com/aa9bng2wdvlq",
+                            company="Rotox Technologies Pvt. Ltd.",
+                            role="AI Engineer – Computer Vision")
+    second = tracker.add_job("https://to.indeed.com/aaxfncp68hfh",
+                             company="ROTOX TECHNOLOGIES PVT LTD",
+                             role="ai engineer  computer vision")
+    assert second["result"] == "duplicate"
+    assert second["job_id"] == first["job_id"]
+    assert len(tracker.list_jobs()) == 1
+
+
+def test_same_company_with_a_different_role_is_added():
+    tracker.add_job("https://to.indeed.com/a1", company="Acme", role="AI Engineer")
+    second = tracker.add_job("https://to.indeed.com/a2", company="Acme", role="Data Analyst")
+    assert second["result"] == "added"
+
+
+def test_jobs_with_unknown_company_and_role_are_not_merged():
+    # Alert emails often have no company or role. Different links = different jobs.
+    tracker.add_job("https://example.com/job-1")
+    second = tracker.add_job("https://example.com/job-2")
+    assert second["result"] == "added"
+
+
 def test_empty_input_is_rejected():
     with pytest.raises(ValueError, match="job link"):
         tracker.add_job("   ")

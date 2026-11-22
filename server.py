@@ -64,7 +64,7 @@ def add_job(link_or_text: str, source: config.JobSource | None = None,
     company, role, location: fill these in if you know them.
     description: the job description text (needed for good matching).
     salary_lpa: yearly salary in lakhs (e.g. 6.5), if the post says it.
-    Duplicate links are not added twice.
+    Duplicates are not added twice: same link, or same company + role.
     """
     return tracker.add_job(link_or_text, source or "", company, role, location,
                            description, salary_lpa)
