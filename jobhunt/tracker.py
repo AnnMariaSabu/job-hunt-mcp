@@ -39,6 +39,7 @@ def add_job(link_or_text: str, source: str = "", company: str = "", role: str = 
         found = sources.find_links(text)
         link = found[0] if found else ""
         description = description or text
+    link = sources.normalize_link(link)  # one standard form, so duplicates are caught
 
     source = (source or sources.detect_source(link)).lower()
     if source not in config.JOB_SOURCES:
@@ -47,7 +48,8 @@ def add_job(link_or_text: str, source: str = "", company: str = "", role: str = 
     existing = db.find_by_link(link)
     if existing:
         return {"result": "duplicate", "job_id": existing["id"],
-                "message": f"Already saved as job {existing['id']}. Nothing added.",
+                "message": f"Already saved as job {existing['id']}. Nothing added. "
+                           "To add a description or fix details, use update_job_details.",
                 "job": summary(existing)}
 
     job_id = db.insert_job(
@@ -62,6 +64,42 @@ def add_job(link_or_text: str, source: str = "", company: str = "", role: str = 
         result["tip"] = ("No description saved. Matching and ranking work much "
                          "better with the job description text.")
     return result
+
+
+def update_job_details(job_id: int, company: str | None = None, role: str | None = None,
+                       location: str | None = None, description: str | None = None,
+                       salary_lpa: float | None = None) -> dict:
+    """Fill in or fix details of a saved job. Only the fields you give are changed."""
+    require_job(job_id)
+    given = {"company": company, "role": role, "location": location,
+             "description": description, "salary_lpa": salary_lpa}
+    fields = {k: (v.strip() if isinstance(v, str) else v)
+              for k, v in given.items() if v is not None}
+    if not fields:
+        raise ValueError("Nothing to change. Give at least one field.")
+    db.update_job(job_id, fields)
+    return {"job_id": job_id, "changed": sorted(fields), "job": summary(db.get_job(job_id))}
+
+
+def import_job_alerts(email_text: str, dry_run: bool = False) -> dict:
+    """Save every job found in a pasted job-alert email. Duplicates are skipped."""
+    found = sources.parse_job_alerts(email_text)
+    if not found:
+        raise ValueError("No job links found. Paste the whole alert email text, "
+                         "including the job links.")
+    if dry_run:
+        return {"dry_run": True, "found": len(found), "jobs": found}
+
+    added, duplicates = [], []
+    for job in found:
+        result = add_job(job["link"], source=job["source"], company=job["company"],
+                         role=job["role"], location=job["location"])
+        target = added if result["result"] == "added" else duplicates
+        target.append({"job_id": result["job_id"], "company": job["company"],
+                       "role": job["role"]})
+    return {"found": len(found), "added": added, "duplicates": duplicates,
+            "tip": "Alert emails have no job description. Paste the description of the "
+                   "jobs you like with update_job_details, so match and rank work well."}
 
 
 def update_status(job_id: int, status: str, note: str = "") -> dict:

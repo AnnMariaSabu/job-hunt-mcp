@@ -235,5 +235,30 @@ def prepare_application(job_id: str) -> str:
     return prompts.prepare_application(job_id)
 
 
+# ---------- Step 9: job sources ----------
+
+@mcp.tool()
+@friendly_errors
+def import_job_alerts(email_text: str, dry_run: bool = False) -> dict:
+    """Save all jobs from a pasted LinkedIn / Naukri / Indeed job-alert email.
+
+    email_text: the whole email text, including the job links.
+    dry_run: True = only show what was found, save nothing.
+    Reads only the pasted text: it never opens the links (no scraping).
+    """
+    return tracker.import_job_alerts(email_text, dry_run)
+
+
+@mcp.tool()
+@friendly_errors
+def update_job_details(job_id: int, company: str | None = None, role: str | None = None,
+                       location: str | None = None, description: str | None = None,
+                       salary_lpa: float | None = None) -> dict:
+    """Fill in or fix a saved job's details, e.g. paste the description of a job that
+    came from an alert email. Only the fields you give are changed."""
+    return tracker.update_job_details(job_id, company, role, location, description,
+                                      salary_lpa)
+
+
 if __name__ == "__main__":
     mcp.run()  # default transport is "stdio"

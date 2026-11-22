@@ -24,6 +24,18 @@ Analyse sales data using SQL, Excel and Power BI dashboards. Statistics a plus.
 Salary: 4 LPA."""
 
 
+ALERT_EMAIL = """Your job alert for data engineer
+Data Engineer
+Beta Solutions
+2-5 Yrs | Chennai
+https://www.naukri.com/job-listings-data-engineer-beta-solutions-chennai-123456?src=jobalert
+
+AI Engineer
+Example AI Labs
+Kochi, Kerala, India
+View job: https://www.linkedin.com/comm/jobs/view/1111/?trackingId=abc
+Unsubscribe: https://www.linkedin.com/comm/psettings/email-unsubscribe"""
+
 LETTER = """Dear Hiring Team,
 
 I am applying for the AI Engineer role at Example AI Labs in Kochi. I am a B.Tech
@@ -138,6 +150,9 @@ async def main():
         from jobhunt import db
         db.update_job(da["job_id"], {"date_updated": "2026-11-10"}, touch=False)
         await call(client, "followups")
+
+        # Step 9: a pasted job-alert email (fake). Tracking junk is cleaned off the links.
+        await call(client, "import_job_alerts", {"email_text": ALERT_EMAIL})
 
         await call(client, "list_jobs")
 

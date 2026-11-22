@@ -348,3 +348,35 @@ When Claude Code opens this folder, it reads this file and starts our server ove
 - **Check it:** `claude mcp list` → `job-hunt: ... ✔ Connected`.
 - **Then just talk:** "Save this job: <link>, it's a Data Analyst role at X in Kochi",
   "Rank my saved jobs", or run the prompt `/mcp__job-hunt__weekly_job_review`.
+
+---
+
+## Step 9: Job sources (paste link, alert emails)
+
+### What we built (in `jobhunt/sources.py` + `tracker.py`)
+- `normalize_link()`: one clean form per job link.
+- `parse_job_alerts()` + tool `import_job_alerts(email_text, dry_run=False)`.
+- Tool `update_job_details(job_id, ...)`: fill in a description later.
+
+### The 4 ways a job gets in
+1. **Paste a link** → `add_job(link, company=..., role=...)`.
+2. **Paste the job post text** → `add_job(text)`. Best, because matching needs the description.
+3. **Paste a job-alert email** → `import_job_alerts(email_text)`, many jobs at once.
+4. **Indeed connector** (in Claude): Claude searches Indeed with the connector, then saves
+   the jobs I pick with `add_job`. Our server needs no extra code for this: tools from
+   different servers work together inside Claude.
+
+### Key ideas
+- **Same job, many links.** Emails add tracking junk:
+  `linkedin.com/comm/jobs/view/123/?trackingId=abc` and `linkedin.com/jobs/view/123/` are the
+  same job. `normalize_link` keeps only what identifies the job (LinkedIn job number,
+  Indeed `jk=`), so the duplicate check really works.
+- **Reading an email with simple rules.** For each *job* link, the 3 lines above it are
+  role / company / location. We skip noise ("View job", "Unsubscribe"), drop salary and
+  experience bits ("2-5 Yrs", "₹6,00,000 a year"), and split "Gamma Tech - Kochi".
+  It's a guess, so `dry_run=True` lets me check first, and Claude can fix fields after.
+- **No scraping.** We read only text I pasted, and never download LinkedIn/Naukri pages.
+  That follows the sites' rules and keeps the project simple and legal.
+- **Tests with fake emails** for each site's format (`tests/test_sources.py`).
+
+`58 passed`
