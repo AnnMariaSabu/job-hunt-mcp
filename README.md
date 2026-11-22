@@ -91,11 +91,27 @@ that are listed in your `master_resume.yaml`; the safety check enforces this.
 | What | Command |
 |---|---|
 | Connect to **Claude Code** | Open this folder in Claude Code and approve the `job-hunt` server from `.mcp.json` (or run `/mcp`). Check with `claude mcp list`. |
+| Connect to the **Claude Desktop app** | Settings → Developer → Edit Config, add the block below (full paths), then fully quit and reopen the app. |
 | **Dashboard** | `.\venv\Scripts\streamlit run dashboard.py` |
 | **Demo** (fake data, temp folder) | `.\venv\Scripts\python.exe demo.py` |
 | **MCP Inspector** | `npx -y @modelcontextprotocol/inspector .\venv\Scripts\python.exe server.py` |
 | **Tests** | `.\venv\Scripts\python.exe -m pytest` |
 | **Evaluation** | `.\venv\Scripts\python.exe evaluate.py` |
+
+Claude Desktop config (`claude_desktop_config.json`; the Microsoft Store version keeps it in
+`%LOCALAPPDATA%\Packages\Claude_<id>\LocalCache\Roaming\Claude\`):
+```json
+{
+  "mcpServers": {
+    "job-hunt": {
+      "command": "C:\\path\\to\\job-hunt-mcp\\venv\\Scripts\\python.exe",
+      "args": ["C:\\path\\to\\job-hunt-mcp\\server.py"]
+    }
+  }
+}
+```
+The claude.ai **website** can't use this server: it only reaches servers on the internet,
+and this one runs on your laptop over stdio.
 
 Things to say to Claude:
 - *"Find jobs on Indeed"* (or run `/mcp__job-hunt__find_jobs`)
