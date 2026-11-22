@@ -14,7 +14,7 @@ from mcp.server import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
 import config
-from jobhunt import matching, ranking, tracker
+from jobhunt import matching, ranking, resume, tracker
 
 mcp = MCPServer(
     config.SERVER_NAME,
@@ -124,6 +124,21 @@ def rank_jobs(status: config.JobStatus = "saved") -> list[dict]:
     Saves rank_score on each job. Default: only jobs I haven't applied to yet.
     """
     return ranking.rank_jobs(status)
+
+
+# ---------- Step 5: tailored resume ----------
+
+@mcp.tool()
+@friendly_errors
+def tailor_resume(job_id: int, bullet_ids: list[str] | None = None) -> dict:
+    """Make a one-page Word resume for one job: output/resumes/<Company>_<Role>.docx.
+
+    It only CHOOSES and ORDERS my real bullets and skills. It never writes new
+    ones, and skill gaps are never added. A safety check runs before saving.
+    bullet_ids: optional, pick bullets yourself (ids from match_resume's
+    supporting_bullets or the resume://bullets resource). Leave empty to auto-pick.
+    """
+    return resume.tailor_resume(job_id, bullet_ids)
 
 
 if __name__ == "__main__":

@@ -226,3 +226,30 @@ without the waiter. And each layer is easy to test alone.
   instead of a silent wrong ranking.
 
 `30 passed`
+
+---
+
+## Step 5: tailor_resume (.docx)
+
+### What we built
+- `jobhunt/resume.py` + tool `tailor_resume(job_id, bullet_ids=None)`
+  → `output/resumes/<Company>_<Role>.docx` (python-docx).
+- `jobhunt/safety.py`: checks every skill and bullet against my data files.
+
+### Key ideas
+- **Tailoring = choosing + ordering, not rewriting.**
+  For an AI job: RAG bullets first, "Python, LLM, RAG, LangChain" first in Skills.
+  The words are always *my* words from `master_bullets.yaml`.
+- **Gaps stay off the resume.** The job wants Docker, but I don't have it, so it's
+  reported as `skill_gaps_not_added` and never written.
+- **Claude can choose, code checks.** Claude may pass `bullet_ids=["rag-bot", ...]`.
+  A made-up id → clear error. **Why?** The AI is good at judging *which* bullets fit,
+  but only code can *guarantee* nothing is invented.
+- **Safety check before saving** (`check_resume_content`): every skill must be spelled
+  exactly as in my resume, every bullet must match word for word. If not → no file.
+  This guards against future changes too ("belt and braces").
+- **Safe file names:** `"Acme AI / Labs"` → `Acme-AI-Labs` (no `/` or `?`, which Windows forbids).
+- **python-docx basics:** `Document()`, `add_heading`, `add_paragraph(text, style="List Bullet")`,
+  `run.bold = True`, `doc.save(path)`.
+
+`35 passed`

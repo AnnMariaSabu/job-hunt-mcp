@@ -65,6 +65,18 @@ def result_data(result):
         return text
 
 
+def print_docx(path: str) -> None:
+    """Show the text inside a Word file."""
+    from docx import Document
+
+    print(f"\n----- inside {Path(path).name} -----")
+    for paragraph in Document(path).paragraphs:
+        if paragraph.text.strip():
+            bullet = "  - " if paragraph.style.name == "List Bullet" else ""
+            print(bullet + paragraph.text)
+    print("-" * 40)
+
+
 async def main():
     tmp = use_temp_folder()
     print(f"Demo folder (fake data): {tmp}")
@@ -89,6 +101,10 @@ async def main():
 
         # Step 4: ranking
         await call(client, "rank_jobs")
+
+        # Step 5: tailored resume (.docx)
+        made = await call(client, "tailor_resume", {"job_id": ai["job_id"]})
+        print_docx(made["file"])
 
         await call(client, "list_jobs")
 
