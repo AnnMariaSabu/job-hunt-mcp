@@ -420,3 +420,46 @@ Overall  precision 1.00 | recall 0.89 | F1 0.94
 5/5 pairs ranked correctly
 65 passed
 ```
+
+---
+
+## Step 11: README + notes
+
+- `README.md` is for **other people**: what it is, how to set it up, how to run it, in one screen.
+- `LEARNING.md` (this file) is for **me**: why things are built the way they are.
+- Checked privacy with `git check-ignore`: my real resume, bullets, rubric, `jobs.db`,
+  `output/` and `.env` are ignored. Only the fake `*.example.yaml` files are in git.
+
+---
+
+## 🧭 The big picture (read this first when revising)
+
+**In one sentence:** Claude is the *brain and the writer*; my server is the *hands and the
+guardrails*.
+
+**One request, start to finish** ("Save this job: https://linkedin.com/...?trackingId=x"):
+1. Claude reads the tool list (names + docstrings + schemas) and picks `add_job`.
+2. Claude writes JSON into the server's **stdin**: `{"method": "tools/call", "params": {"name": "add_job", ...}}`
+3. `server.py` (waiter) → `tracker.add_job` (chef): clean the link, check for duplicates
+   → `db.insert_job` (fridge): one row in SQLite.
+4. The answer goes back as JSON on **stdout**; Claude tells me "Saved as job 4".
+   A mistake comes back as a `ToolError` message Claude can read and fix.
+
+**The 10 ideas in this project:**
+1. **MCP server** = gives an AI app new abilities through a standard plug.
+2. **Tool / resource / prompt** = do something / read something / a ready-made recipe.
+3. **stdio** = talk through stdin/stdout pipes: local, simple, private. No `print()`!
+4. **Type hints become the schema** Claude reads (`Literal` → a fixed list of choices).
+5. **Layers** (waiter → chef → fridge) let the server and the dashboard share one kitchen.
+6. **SQLite + `?` placeholders** = a database in one file, safe from SQL injection.
+7. **Private vs example data** = real files git-ignored, fake ones committed.
+8. **Code for facts, AI for words.** Matching, ranking and checks are code (fast, free,
+   same answer every time, explainable). Writing is Claude.
+9. **Grounding + guardrails** = give the AI real facts, then check its output in code.
+10. **Tests vs evaluation** = "does it work?" vs "how good is it?".
+
+**Try next:**
+- Put in my real data (`Copy-Item data\*.example.yaml ...`, see README) and use it for a week.
+- Exercise: fix the eval misses (add aliases in `jobhunt/skills.py`), rerun `evaluate.py`.
+- Ideas: read salary from Indeed alerts ("₹6,00,000 a year" → 6 LPA), an interview-prep
+  prompt, a "weekly stats" chart in the dashboard.
