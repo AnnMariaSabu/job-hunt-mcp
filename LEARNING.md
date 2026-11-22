@@ -536,6 +536,22 @@ because then every "Unknown company / Unknown role" job would look the same.
 
 ---
 
+## Using the server in the Claude Desktop app
+
+- **Same server, different client.** Claude Code reads `.mcp.json`; the Desktop app reads
+  `claude_desktop_config.json`. Both start the *same* `server.py` over stdio and share the
+  same `jobs.db`, so a job saved in one shows up in the other (and in the dashboard).
+- **Full paths needed.** The app doesn't start inside my project folder, so
+  `venv/Scripts/python.exe` wouldn't be found. I tested by starting the server from a
+  *different* folder: it still worked, because `config.py` builds every path from
+  `BASE_DIR` (the folder of `config.py`), not from "the folder I'm in".
+- **Why not the claude.ai website?** It can only reach MCP servers *on the internet*
+  (a URL). Mine runs on my laptop. Putting it online would also put my resume data online.
+- **Microsoft Store version** of the app keeps its config in a different folder:
+  `%LOCALAPPDATA%\Packages\Claude_...\LocalCache\Roaming\Claude\`.
+
+---
+
 ## 🧭 The big picture (read this first when revising)
 
 **In one sentence:** Claude is the *brain and the writer*; my server is the *hands and the
