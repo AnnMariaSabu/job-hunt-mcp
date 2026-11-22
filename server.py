@@ -14,7 +14,7 @@ from mcp.server import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
 import config
-from jobhunt import matching, ranking, resume, tracker
+from jobhunt import cover_letter, matching, ranking, reminders, resume, tracker
 
 mcp = MCPServer(
     config.SERVER_NAME,
@@ -139,6 +139,44 @@ def tailor_resume(job_id: int, bullet_ids: list[str] | None = None) -> dict:
     supporting_bullets or the resume://bullets resource). Leave empty to auto-pick.
     """
     return resume.tailor_resume(job_id, bullet_ids)
+
+
+# ---------- Step 6: cover letter + follow-ups ----------
+
+@mcp.tool()
+@friendly_errors
+def draft_cover_letter(job_id: int) -> dict:
+    """Get the FACTS and RULES for writing a cover letter for one job.
+
+    Returns the job, my profile, my best real bullets, matched skills and gaps.
+    YOU (Claude) then write the letter using only these facts, and save it with
+    save_cover_letter.
+    """
+    return cover_letter.draft_cover_letter(job_id)
+
+
+@mcp.tool()
+@friendly_errors
+def save_cover_letter(job_id: int, letter_text: str,
+                      learning_mentions: list[str] | None = None) -> dict:
+    """Check a cover letter and save it as output/cover_letters/<Company>_<Role>.docx.
+
+    letter_text: the full letter. Put a blank line between paragraphs.
+    learning_mentions: skills the letter says I am LEARNING (not claiming), e.g. ["Docker"].
+    Saving is refused if the letter claims skills or numbers not in my data.
+    """
+    return cover_letter.save_cover_letter(job_id, letter_text, learning_mentions)
+
+
+@mcp.tool()
+@friendly_errors
+def followups(days: int | None = None) -> list[dict]:
+    """Jobs (applied or interview) with no update for a while. Most overdue first.
+
+    days: how long counts as 'a while' (default from config, 7 days).
+    The HUMAN sends the follow-up. Then use add_note to log it, which resets the timer.
+    """
+    return reminders.followups(days)
 
 
 if __name__ == "__main__":

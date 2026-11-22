@@ -24,6 +24,26 @@ Analyse sales data using SQL, Excel and Power BI dashboards. Statistics a plus.
 Salary: 4 LPA."""
 
 
+LETTER = """Dear Hiring Team,
+
+I am applying for the AI Engineer role at Example AI Labs in Kochi. I am a B.Tech
+graduate who enjoys building practical AI tools in Python, and your RAG and LLM work
+is exactly what I want to grow in.
+
+In my RAG Study Assistant project, I built a RAG chatbot that answers questions from
+50+ pages of college notes, using LangChain and an LLM API. I also tested the answers
+on 30 questions, reaching 80% correct answers. This taught me to check the quality
+of an AI system, not just build it.
+
+I have not used Docker in a project yet, but I am learning it now. I would be glad to
+bring my Python, SQL and machine learning skills to your team, and to keep learning
+from your mentorship and training.
+
+Thank you for your time.
+
+Asha Example"""
+
+
 def use_temp_folder() -> Path:
     """Point the database and output at a new temp folder, and the private
     data files at missing paths so the *.example.yaml files are used."""
@@ -105,6 +125,19 @@ async def main():
         # Step 5: tailored resume (.docx)
         made = await call(client, "tailor_resume", {"job_id": ai["job_id"]})
         print_docx(made["file"])
+
+        # Step 6: cover letter. Claude would write the letter; here the demo plays Claude.
+        await call(client, "draft_cover_letter", {"job_id": ai["job_id"]})
+        letter = {"job_id": ai["job_id"], "letter_text": LETTER}
+        await call(client, "save_cover_letter", {**letter, "letter_text": LETTER.replace(
+            "80%", "95%")})                       # invented number -> blocked
+        await call(client, "save_cover_letter", {**letter, "learning_mentions": ["Docker"]})
+
+        # Step 6: follow-ups (pretend we applied 10 days ago)
+        await call(client, "update_status", {"job_id": da["job_id"], "status": "applied"})
+        from jobhunt import db
+        db.update_job(da["job_id"], {"date_updated": "2026-11-10"}, touch=False)
+        await call(client, "followups")
 
         await call(client, "list_jobs")
 

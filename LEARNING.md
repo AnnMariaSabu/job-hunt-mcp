@@ -253,3 +253,35 @@ without the waiter. And each layer is easy to test alone.
   `run.bold = True`, `doc.save(path)`.
 
 `35 passed`
+
+---
+
+## Step 6: Cover letter + follow-ups
+
+### What we built
+- `jobhunt/cover_letter.py` + tools `draft_cover_letter(job_id)` and
+  `save_cover_letter(job_id, letter_text, learning_mentions)`.
+- `jobhunt/reminders.py` + tool `followups(days=7)`.
+
+### Key ideas
+- **Claude writes, code checks.** Our server has no AI inside. So:
+  1. `draft_cover_letter` gives Claude a **facts pack** (job, my real bullets, gaps, rules).
+     Giving an AI real facts to write from is called **grounding**.
+  2. Claude writes the letter.
+  3. `save_cover_letter` **checks it in code** before saving. A check like this is a **guardrail**.
+- **The guardrails:**
+  - a skill not on my resume → blocked ("Kubernetes")
+  - a number not in my data or the job post → blocked ("95%" when my bullet says 80%)
+  - too short / too long → blocked
+- **"I know X" vs "I'm learning X".** Simple code can't tell these apart. So Claude
+  must *declare* learning skills: `learning_mentions=["Docker"]`. Honest and visible.
+- **Error messages are instructions.** The blocked message says *what* to fix, so
+  Claude can fix the letter by itself and try again.
+- **Follow-ups:** status `applied`/`interview` + no update for 7+ days → remind me.
+  After I follow up (a *human* sends it), `add_note` resets the timer.
+- **Testing dates:** `followups(today=date(2026, 11, 21))`. Passing "today" in makes
+  time-based code easy to test.
+- **Naming:** the module is `reminders.py`, not `followups.py`, so it doesn't clash with
+  the tool function `followups()` in server.py.
+
+`42 passed`
