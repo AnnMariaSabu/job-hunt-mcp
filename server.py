@@ -8,13 +8,15 @@ This file is the 'waiter': each tool is a thin wrapper that calls the real
 logic in the jobhunt/ package. The docstrings are what Claude reads.
 """
 
+import json
 from functools import wraps
 
 from mcp.server import MCPServer
-from mcp.server.mcpserver.exceptions import ToolError
+from mcp.server.mcpserver.exceptions import ResourceNotFoundError, ToolError
 
 import config
-from jobhunt import cover_letter, matching, ranking, reminders, resume, tracker
+from jobhunt import (cover_letter, data_files, db, matching, prompts, ranking, reminders,
+                     resume, tracker)
 
 mcp = MCPServer(
     config.SERVER_NAME,
@@ -177,6 +179,60 @@ def followups(days: int | None = None) -> list[dict]:
     The HUMAN sends the follow-up. Then use add_note to log it, which resets the timer.
     """
     return reminders.followups(days)
+
+
+# ---------- Step 7: skill gaps, resources, prompts ----------
+
+@mcp.tool()
+@friendly_errors
+def skill_gap_report() -> dict:
+    """Which skills do MANY of my active jobs ask for that I don't have yet?
+    The top one is the best thing to learn next."""
+    return matching.skill_gap_report()
+
+
+# Resources = things Claude can READ, each with an address (URI).
+
+@mcp.resource("resume://master", title="Master resume", mime_type="application/yaml")
+def master_resume() -> str:
+    """My master resume: profile, education, skills."""
+    return data_files.resolve(config.MASTER_RESUME_PATH).read_text(encoding="utf-8")
+
+
+@mcp.resource("resume://bullets", title="Master bullets", mime_type="application/yaml")
+def master_bullets() -> str:
+    """Every achievement bullet with its id and skill tags."""
+    return data_files.resolve(config.MASTER_BULLETS_PATH).read_text(encoding="utf-8")
+
+
+@mcp.resource("jobs://list", title="Job list", mime_type="application/json")
+def job_list() -> str:
+    """All saved jobs, short view."""
+    return json.dumps(tracker.list_jobs(), indent=2)
+
+
+@mcp.resource("jobs://{job_id}", title="One job", mime_type="application/json")
+def job_detail(job_id: int) -> str:
+    """Every detail of one job. A URI with {job_id} is a 'template': one address
+    pattern for many jobs, e.g. jobs://3."""
+    job = db.get_job(job_id)
+    if job is None:
+        raise ResourceNotFoundError(f"No job with id {job_id}")
+    return json.dumps(job, indent=2)
+
+
+# Prompts = ready-made recipes I pick from a menu (e.g. /mcp__job-hunt__weekly_job_review).
+
+@mcp.prompt(title="Weekly job review")
+def weekly_job_review() -> str:
+    """Follow-ups, top 3 jobs to apply to, the skill to learn next, and counts."""
+    return prompts.WEEKLY_JOB_REVIEW
+
+
+@mcp.prompt(title="Prepare an application")
+def prepare_application(job_id: str) -> str:
+    """Match, tailored resume and cover letter for one job. I apply myself."""
+    return prompts.prepare_application(job_id)
 
 
 if __name__ == "__main__":

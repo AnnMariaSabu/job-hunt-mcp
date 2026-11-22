@@ -285,3 +285,42 @@ without the waiter. And each layer is easy to test alone.
   the tool function `followups()` in server.py.
 
 `42 passed`
+
+---
+
+## Step 7: Resources + prompts
+
+### What we built
+- **Resources:** `resume://master`, `resume://bullets`, `jobs://list`, and the
+  template `jobs://{job_id}`.
+- **Prompts:** `weekly_job_review` and `prepare_application(job_id)` (texts in `jobhunt/prompts.py`).
+- **Tool:** `skill_gap_report()`, which skill is missing in the MOST jobs.
+
+### Key ideas: the 3 things an MCP server can offer
+| | What it is | Who chooses it | Example |
+|---|---|---|---|
+| **Tool** | a function that *does* something | Claude | `add_job(...)` |
+| **Resource** | data to *read*, with an address (URI) | the app / me attach it | `resume://master` |
+| **Prompt** | a ready-made *recipe* message | **me**, from a menu | "Weekly job review" |
+
+- **Resource = a file with an address.** `resume://master` is like a link. Reading it
+  never changes anything, so it is always safe.
+- **Template:** `jobs://{job_id}` is one pattern for many addresses (`jobs://1`, `jobs://2`...).
+  The SDK turns `"3"` into the int `3` because of the type hint `job_id: int`.
+- **Prompt = saved instructions.** Instead of typing a long request every Sunday, I pick
+  "Weekly job review" and Claude knows which tools to call and in which order.
+  The prompt also repeats the safety rule: *never apply for me*.
+- **Skill gap report:** 3 of 3 jobs want Docker → Docker is the best skill to learn next.
+- **Python trap avoided:** a *list* as a default argument is shared between calls; a
+  *tuple* can't be changed, so it's safe.
+
+### Output (Inspector over stdio)
+```
+tools/list                 hello, add_job, update_status, list_jobs, get_job, add_note, match_resume,
+                           rank_jobs, tailor_resume, draft_cover_letter, save_cover_letter,
+                           followups, skill_gap_report
+resources/list             resume://master, resume://bullets, jobs://list
+resources/templates/list   jobs://{job_id}
+prompts/list               weekly_job_review, prepare_application
+```
+`46 passed`

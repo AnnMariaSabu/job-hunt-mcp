@@ -1,6 +1,11 @@
-"""match_resume: how well does my resume fit one saved job?"""
+"""match_resume: how well does my resume fit one saved job?
+skill_gap_report: which skills do MANY of my jobs want that I don't have?"""
+
+from collections import Counter
 
 from jobhunt import data_files, db, skills, tracker
+
+ACTIVE_STATUSES = ("saved", "applied", "interview")
 
 
 def job_text(job: dict) -> str:
@@ -43,3 +48,22 @@ def match_resume(job_id: int) -> dict:
     if warning:
         answer["warning"] = warning
     return answer
+
+
+def skill_gap_report(statuses: tuple[str, ...] = ACTIVE_STATUSES) -> dict:
+    """Count my skill gaps across many jobs.
+
+    Example: 3 of my 4 jobs want Docker -> learning Docker helps the most.
+    """
+    my_skills = data_files.load_resume().get("skills", [])
+    gaps, checked = Counter(), 0
+    for job in db.list_jobs(list(statuses)):
+        result = skills.match_skills(job_text(job), my_skills)
+        if result["match_percent"] is not None:
+            checked += 1
+            gaps.update(result["skill_gaps"])
+    return {
+        "jobs_checked": checked,
+        "top_gaps": [{"skill": s, "jobs": n} for s, n in gaps.most_common(10)],
+        "tip": "The skill at the top is the one that would open the most doors.",
+    }
