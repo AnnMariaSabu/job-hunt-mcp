@@ -324,3 +324,27 @@ resources/templates/list   jobs://{job_id}
 prompts/list               weekly_job_review, prepare_application
 ```
 `46 passed`
+
+---
+
+## Step 8: Connect to Claude Code
+
+### What we built
+`.mcp.json` in the project folder:
+```json
+{"mcpServers": {"job-hunt": {"type": "stdio",
+  "command": "venv/Scripts/python.exe", "args": ["server.py"]}}}
+```
+When Claude Code opens this folder, it reads this file and starts our server over stdio.
+
+### Key ideas
+- **Project config (`.mcp.json`) vs my personal config.** The file lives in the repo, so the
+  setup travels with the project: clone → approve → it works.
+- **Relative paths** (`venv/Scripts/python.exe`): Claude Code starts the server *from the
+  project folder*, so no `C:\Users\<me>\...` path (with my username) goes into git.
+- **Approval = security.** `claude mcp list` showed `⏸ Pending approval`. A repo's
+  `.mcp.json` could start *any* program, so Claude Code asks me first. Approve it
+  once: open Claude Code in this folder (or run `/mcp`) and choose the job-hunt server.
+- **Check it:** `claude mcp list` → `job-hunt: ... ✔ Connected`.
+- **Then just talk:** "Save this job: <link>, it's a Data Analyst role at X in Kochi",
+  "Rank my saved jobs", or run the prompt `/mcp__job-hunt__weekly_job_review`.
