@@ -21,8 +21,8 @@ from jobhunt import (cover_letter, data_files, db, matching, prompts, ranking, r
 mcp = MCPServer(
     config.SERVER_NAME,
     instructions=(
-        "Job search helper for a fresher looking for AI Engineer, AI/ML Engineer, "
-        "Data Analyst and Data Engineer roles in Kochi, Bangalore and Chennai. "
+        f"Job search helper for a fresher looking for {', '.join(config.TARGET_ROLES)} "
+        f"roles in {', '.join(config.TARGET_LOCATIONS)}. "
         "It tracks jobs and prepares documents. It NEVER applies to jobs: the human "
         "always applies. Use list_jobs to find job ids."
     ),

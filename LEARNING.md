@@ -552,6 +552,34 @@ because then every "Unknown company / Unknown role" job would look the same.
 
 ---
 
+## Changing my target roles
+
+### What changed
+- `config.py` → `TARGET_ROLES`: AI Engineer, GenAI Engineer, Machine Learning Engineer,
+  Computer Vision Engineer, Python Developer (backup). Data Analyst / Data Engineer dropped:
+  my resume is AI-focused, so those matched only 0–40%.
+- My own **private** `data/rubric.yaml` (git-ignored): extra titles that count as a full
+  match (AI/ML Engineer, LLM Engineer, any "Computer Vision" title, Backend Developer...).
+- The server's instructions to Claude are now built **from config.py**, so they can't go
+  out of date again (they still said "Data Analyst" before).
+- `find_jobs` prompt: a rule for Indeed's **rate limit** (≈15 searches + 15 lookups, wait and
+  retry once), learned from the first real run.
+
+### Key ideas
+- **Settings vs data.** Roles are in `config.py` (one place). How I *weigh* jobs is in my
+  rubric, which is personal, so it's a private data file.
+- **One source of truth.** The server instructions used to repeat the roles as text, and they
+  went stale. Now they read `config.TARGET_ROLES`.
+- **A running server keeps old code.** The job-hunt server in this Claude session started
+  *before* the change, so I re-ranked with a fresh Python script. A new session (or a
+  restart of the Desktop app) loads the new roles.
+- **Before vs after:** Rotox (computer vision) #13 → **#1**, Eternal #14 → **#3**,
+  Data Analyst jobs stay at the bottom.
+
+`72 passed` · eval unchanged (precision 1.00, F1 0.94, 5/5 pairs)
+
+---
+
 ## 🧭 The big picture (read this first when revising)
 
 **In one sentence:** Claude is the *brain and the writer*; my server is the *hands and the

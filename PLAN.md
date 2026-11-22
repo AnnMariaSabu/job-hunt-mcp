@@ -7,7 +7,9 @@ reminds me to follow up. Inspired by github.com/dfrysinger/ai-job-hunt-toolkit,
 built from scratch in Python for learning. It NEVER applies by itself.
 
 ## My job search
-- Roles: AI Engineer, AI/ML Engineer, Data Analyst, Data Engineer
+- Roles (updated): AI Engineer, GenAI / LLM Engineer, Machine Learning Engineer,
+  Computer Vision Engineer; Python (backend) Developer as a backup.
+  Data Analyst / Data Engineer dropped: my resume is AI-focused, so they matched poorly.
 - Level: Fresher / 0-2 years (B.Tech graduate)
 - Locations: Kochi, Bangalore, Chennai
 - Sources: Indeed connector (Claude searches, `find_jobs` prompt) + paste LinkedIn /

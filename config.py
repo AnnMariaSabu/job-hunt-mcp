@@ -38,7 +38,11 @@ JOB_STATUSES = list(get_args(JobStatus))
 JOB_SOURCES = list(get_args(JobSource))
 
 # ---------- My job search ----------
-TARGET_ROLES = ["AI Engineer", "AI/ML Engineer", "Data Analyst", "Data Engineer"]
+# Roles that find_jobs searches for, and that count as a full title match when ranking.
+# Focus: GenAI/LLM, machine learning, computer vision. Python developer = backup.
+# (More titles that count as a full match live in data/rubric.yaml.)
+TARGET_ROLES = ["AI Engineer", "GenAI Engineer", "Machine Learning Engineer",
+                "Computer Vision Engineer", "Python Developer"]
 TARGET_LOCATIONS = ["Kochi", "Bangalore", "Chennai"]
 
 # Different spellings of the same city, so "Bengaluru" counts as "Bangalore".
